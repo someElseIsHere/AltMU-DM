@@ -13,6 +13,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.Collection;
 
@@ -63,7 +64,7 @@ public class ChristmasCreeperEntity extends CreeperEntity{
 			Explosion.Mode explosion$mode = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this) ? Explosion.Mode.DESTROY : Explosion.Mode.NONE;
 			float f = this.isPowered() ? 2.0F : 1.0F;
 			this.dead = true;
-			ChristmasCrackerBlock.openCracker(level, this.getEyePosition(1));
+			ChristmasCrackerBlock.openCracker((ServerWorld) level, this.getEyePosition(1));
 
 			this.remove();
 			this.spawnLingeringCloud();

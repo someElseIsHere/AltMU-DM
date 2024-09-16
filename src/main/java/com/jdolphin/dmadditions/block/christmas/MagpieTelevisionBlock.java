@@ -18,6 +18,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -31,8 +32,10 @@ public class MagpieTelevisionBlock extends HorizontalBlock {
 	public static final IntegerProperty CHANNEL = IntegerProperty.create("channel", 0, 5);
 	public static final BooleanProperty ON = BooleanProperty.create("on");
 
+	@NotNull
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+	@SuppressWarnings("deprecation")
+	public VoxelShape getShape(BlockState state, @NotNull IBlockReader reader, @NotNull BlockPos pos, @NotNull ISelectionContext context) {
 		switch (state.getValue(HorizontalBlock.FACING)) {
             case EAST:
             case WEST:
@@ -58,8 +61,10 @@ public class MagpieTelevisionBlock extends HorizontalBlock {
 			.setValue(ON, false);
 	}
 
+	@NotNull
 	@Override
-	public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+	@SuppressWarnings("deprecation")
+	public ActionResultType use(@NotNull BlockState state, World world, @NotNull BlockPos pos, @NotNull PlayerEntity player, @NotNull Hand handIn, @NotNull BlockRayTraceResult hit) {
 		if (!world.isClientSide) {
 			if (player.isCrouching()) {
 				world.setBlockAndUpdate(pos, state.setValue(ON, !state.getValue(ON)));
@@ -75,7 +80,9 @@ public class MagpieTelevisionBlock extends HorizontalBlock {
 		return ActionResultType.FAIL;
 	}
 
-	public void neighborChanged(BlockState state, World world, BlockPos blockPos, Block block, BlockPos blockPos1, boolean isMoving) {
+	@Override
+	@SuppressWarnings("deprecation")
+	public void neighborChanged(@NotNull BlockState state, World world, @NotNull BlockPos blockPos, @NotNull Block block, @NotNull BlockPos blockPos1, boolean isMoving) {
 		if (!world.isClientSide) {
 			boolean on = state.getValue(ON);
 			boolean hasSignal = world.hasNeighborSignal(blockPos);

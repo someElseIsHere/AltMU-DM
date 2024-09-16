@@ -13,6 +13,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -32,8 +33,11 @@ public class ChristmasLightsBlock extends HorizontalBlock {
 		return 16;
 	}
 
-	public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
-		switch((Direction)blockState.getValue(FACING)) {
+	@NotNull
+	@Override
+	@SuppressWarnings("deprecation")
+	public  VoxelShape getShape(BlockState blockState, @NotNull IBlockReader iBlockReader, @NotNull BlockPos blockPos, @NotNull ISelectionContext iSelectionContext) {
+		switch(blockState.getValue(FACING)) {
 			case NORTH:
 				return NORTH_AABB;
 			case SOUTH:
@@ -45,7 +49,9 @@ public class ChristmasLightsBlock extends HorizontalBlock {
 				return EAST_AABB;
 		}
 	}
+
 	@Nullable
+	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext blockItemUseContext) {
 		if (!blockItemUseContext.replacingClickedOnBlock()) {
 			BlockState blockstate = blockItemUseContext.getLevel().getBlockState(blockItemUseContext.getClickedPos().relative(blockItemUseContext.getClickedFace().getOpposite()));
@@ -70,7 +76,8 @@ public class ChristmasLightsBlock extends HorizontalBlock {
 		return null;
 	}
 
-	protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> p_206840_1_) {
-		p_206840_1_.add(FACING);
+	@Override
+	protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(FACING);
 	}
 }

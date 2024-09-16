@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public class RandomizerBlock extends HorizontalBlock implements IBetterPanel {
-	private String dimensionKey;
 
 	public static final DirectionProperty FACING = IBetterPanel.FACING;
 
@@ -95,10 +94,7 @@ public class RandomizerBlock extends HorizontalBlock implements IBetterPanel {
 		builder.add(FACING, FACE);
 	}
 
-	public RegistryKey<World> dimensionWorldKey() {
-		return RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(this.dimensionKey));
-	}
-
+	@Override
 	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn,
 	                            BlockRayTraceResult rayTraceResult) {
 		if (worldIn.isClientSide)
@@ -111,9 +107,6 @@ public class RandomizerBlock extends HorizontalBlock implements IBetterPanel {
 				ServerWorld level = (ServerWorld) worldIn;
 				WorldBorder border = level.getWorldBorder();
 				TardisData tardis = DMTardis.getTardisFromInteriorPos(pos);
-
-				Location currentLocation = tardis.getCurrentLocation();
-				BlockPos currentPos = currentLocation.getBlockPosition();
 
 				double i = DMACommonConfig.randomizer_max.get();
 
@@ -136,19 +129,6 @@ public class RandomizerBlock extends HorizontalBlock implements IBetterPanel {
 					MessageType.STATUS_BAR);
 
 				worldIn.playSound(null, pos, DMSoundEvents.TARDIS_CONTROLS_BUTTON_CLICK.get(), SoundCategory.BLOCKS, 1, 1);
-			}
-
-
-			if (DmAdditions.hasNTM()) {
-				if (net.tardis.mod.helper.WorldHelper.areDimensionTypesSame(worldIn, net.tardis.mod.world.dimensions.TDimensions.DimensionTypes.TARDIS_TYPE)) {
-					Random rand = new Random();
-					net.tardis.mod.helper.TardisHelper.getConsole(worldIn.getServer(), worldIn).ifPresent(tile -> {
-						if(!player.level.isClientSide() && tile.getLandTime() <= 0) {
-							int rad = 5 * tile.coordIncr;
-							BlockPos dest = tile.getDestinationPosition().offset(rad - rand.nextInt(rad * 2), 0, rad - rand.nextInt(rad * 2));
-							tile.setDestination(tile.getDestinationDimension(), dest);
-					}});
-				}
 			}
 
 

@@ -13,6 +13,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
+import org.jetbrains.annotations.NotNull;
 
 public class BaubleBlock extends Block {
 	public BaubleBlock(Properties properties) {
@@ -23,19 +24,26 @@ public class BaubleBlock extends Block {
 		this(AbstractBlock.Properties.of(Material.GLASS).noOcclusion().noCollission());
 	}
 
-	public BlockState updateShape(BlockState blockState, Direction direction, BlockState blockState1, IWorld world, BlockPos pos, BlockPos pos1) {
+	@NotNull
+	@Override
+	@SuppressWarnings("deprecation")
+	public BlockState updateShape(@NotNull BlockState blockState, @NotNull Direction direction, @NotNull BlockState blockState1, @NotNull IWorld world, @NotNull BlockPos pos, @NotNull BlockPos pos1) {
 		return !this.canSurvive(blockState, world, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(blockState, direction, blockState1, world, pos, pos1);
 	}
 
-	public boolean canSurvive(BlockState blockState, IWorldReader reader, BlockPos pos) {
+	@Override
+	@SuppressWarnings("deprecation")
+	public boolean canSurvive(@NotNull BlockState blockState, IWorldReader reader, BlockPos pos) {
 		BlockPos abovePos = pos.above();
 		BlockState aboveState = reader.getBlockState(abovePos);
 
 		return aboveState.isFaceSturdy(reader, abovePos, Direction.DOWN) || aboveState.is(BlockTags.LEAVES);
 	}
 
+	@NotNull
 	@Override
-	public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
+	@SuppressWarnings("deprecation")
+	public VoxelShape getShape(@NotNull BlockState blockState, @NotNull IBlockReader iBlockReader, @NotNull BlockPos blockPos, @NotNull ISelectionContext iSelectionContext) {
 		return Block.box(5.0D, 10.0D, 5.0D, 11.0D, 16.0D, 11.0D);
 	}
 }

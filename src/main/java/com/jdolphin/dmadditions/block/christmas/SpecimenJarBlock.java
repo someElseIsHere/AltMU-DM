@@ -25,6 +25,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -33,8 +34,8 @@ public class SpecimenJarBlock extends FallingBlock {
 	public static final DirectionProperty FACING = HorizontalBlock.FACING;
 	public static final IntegerProperty SPECIMEN = IntegerProperty.create("specimen", 0, 3);
 	public static final VoxelShape SHAPE = Block.box(3, 0, 3, 13, 16, 13);
-	public SpecimenJarBlock(Properties p_i48377_1_) {
-		super(p_i48377_1_);
+	public SpecimenJarBlock(Properties properties) {
+		super(properties);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
 	}
 
@@ -48,19 +49,20 @@ public class SpecimenJarBlock extends FallingBlock {
 
 	@Nullable
 	@Override
-	public BlockState getStateForPlacement(BlockItemUseContext context) {
+	public BlockState getStateForPlacement(@NotNull BlockItemUseContext context) {
 		return this.defaultBlockState()
 			.setValue(FACING, Direction.NORTH)
 			.setValue(SPECIMEN, 0);
 	}
 
+	@NotNull
 	@Override
-	public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
+	public VoxelShape getShape(@NotNull BlockState blockState, @NotNull IBlockReader iBlockReader, @NotNull BlockPos blockPos, @NotNull ISelectionContext iSelectionContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public void onLand(World world, BlockPos pos, BlockState state, BlockState state1, FallingBlockEntity fallingBlock) {
+	public void onLand(World world, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull BlockState state1, @NotNull FallingBlockEntity fallingBlock) {
 		if(!world.isClientSide){
 //			if(fallingBlock.blockData.contains("Item")){
 //				ItemStack item = ItemStack.of(fallingBlock.blockData.getCompound("Item"));
@@ -80,7 +82,8 @@ public class SpecimenJarBlock extends FallingBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, World world, BlockPos pos, BlockState state1, boolean harvest) {
+	@SuppressWarnings("deprecation")
+	public void onRemove(@NotNull BlockState state, @NotNull World world, @NotNull BlockPos pos, BlockState state1, boolean harvest) {
 		if(state1.getBlock() != this && world.getBlockState(pos.below()).getBlock() != Blocks.AIR){
 			TileEntity te = world.getBlockEntity(pos);
 			if(te instanceof SpecimenJarTileEntity) dropSpecimen(((SpecimenJarTileEntity)te).getSpecimen(), pos, world);
@@ -100,7 +103,8 @@ public class SpecimenJarBlock extends FallingBlock {
 	}
 
 	@Override
-	public ActionResultType use(BlockState state, World world, BlockPos blockPos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+	@SuppressWarnings("deprecation")
+	public @NotNull ActionResultType use(@NotNull BlockState state, World world, @NotNull BlockPos blockPos, @NotNull PlayerEntity player, @NotNull Hand hand, @NotNull BlockRayTraceResult rayTraceResult) {
 		if(world.isClientSide || hand != Hand.MAIN_HAND) return ActionResultType.FAIL;
 
 		TileEntity te = world.getBlockEntity(blockPos);
@@ -169,19 +173,17 @@ public class SpecimenJarBlock extends FallingBlock {
 	}
 
 	private ActionResultType giveSpecimen(ItemStack specimen, ItemStack held, PlayerEntity player, BlockPos pos, World world){
-		switch(SpecimenJarTileEntity.getSpecimenIndex(specimen.getItem())){
-			case 0:		// Special case for kantrofarri
-				KantrofarriEntity kantrofarri = new KantrofarriEntity(DMAEntities.KANTROFARRI.get(), world);
-				Vector3d position = player.getPosition(1).add(pos.getX()+0.5,pos.getY()+0.5,pos.getZ()+0.5).scale(0.5);
-				kantrofarri.moveTo(position);
-				world.addFreshEntity(kantrofarri);
-				return ActionResultType.SUCCESS;
-
-			default:	// Generic case
-				if(held.isEmpty()) player.setItemInHand(Hand.MAIN_HAND, specimen);
-				else if(held.sameItem(specimen) && ItemStack.tagMatches(held, specimen)) held.grow(1);
-				else return ActionResultType.PASS;
-				return ActionResultType.CONSUME;
-		}
-	}
+		// Special case for kantrofarri
+        if (SpecimenJarTileEntity.getSpecimenIndex(specimen.getItem()) == 0) {
+            KantrofarriEntity kantrofarri = new KantrofarriEntity(DMAEntities.KANTROFARRI.get(), world);
+            Vector3d position = player.getPosition(1).add(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5).scale(0.5);
+            kantrofarri.moveTo(position);
+            world.addFreshEntity(kantrofarri);
+            return ActionResultType.SUCCESS;
+        }
+        if (held.isEmpty()) player.setItemInHand(Hand.MAIN_HAND, specimen);
+        else if (held.sameItem(specimen) && ItemStack.tagMatches(held, specimen)) held.grow(1);
+        else return ActionResultType.PASS;
+        return ActionResultType.CONSUME;
+    }
 }

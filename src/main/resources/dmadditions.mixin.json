@@ -3,14 +3,11 @@
 	"minVersion": "0.8",
 	"package": "com.jdolphin.dmadditions.mixin",
 	"compatibilityLevel": "JAVA_8",
-	"plugin": "com.jdolphin.dmadditions.mixin.config.DMAMixinConfigPlugin",
 	"injectors": {
 		"defaultRequire": 1
 	},
 	"refmap": "dmadditions.mixin-refmap.json",
 	"mixins": [
-      "comp.immp.BotiMixin",
-      "comp.ntm.TardisActionListMixin",
       "other.CarvedPumpkinBlockMixin",
       "other.DalekRegistryMixin",
       "other.DataMixin",

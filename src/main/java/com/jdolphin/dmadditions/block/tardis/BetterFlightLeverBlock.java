@@ -1,6 +1,5 @@
 package com.jdolphin.dmadditions.block.tardis;
 
-import com.jdolphin.dmadditions.DmAdditions;
 import com.jdolphin.dmadditions.util.Helper;
 import com.swdteam.common.init.DMSoundEvents;
 import com.swdteam.common.init.DMTardis;
@@ -43,35 +42,6 @@ public class BetterFlightLeverBlock extends BetterTardisLeverBlock {
 					this.switchLever(state, worldIn, pos);
 				}
 			} else this.switchLever(state, worldIn, pos);
-
-			if (DmAdditions.hasNTM()) {
-				if (net.tardis.mod.helper.WorldHelper.areDimensionTypesSame(worldIn, net.tardis.mod.world.dimensions.TDimensions.DimensionTypes.TARDIS_TYPE)) {
-					net.tardis.mod.helper.TardisHelper.getConsole(worldIn.getServer(), worldIn).ifPresent(tile -> {
-						tile.getControl(net.tardis.mod.controls.HandbrakeControl.class).ifPresent(brake -> {
-							if (brake.isFree()) {
-								if (!tile.isInFlight() || tile.isLanding()) {
-									tile.getControl(net.tardis.mod.controls.ThrottleControl.class).ifPresent(sys -> {
-										sys.setAmount(1.0f);
-									});
-									tile.takeoff();
-									tile.getSubsystem(net.tardis.mod.subsystem.StabilizerSubsystem.class).ifPresent(sys -> {
-										if (!sys.isControlActivated()) {
-											sys.setControlActivated(true);
-										}
-									});
-								}
-							}else this.switchLever(state, worldIn, pos);
-						});
-						if (tile.isInFlight()) {
-							tile.land();
-						}
-					});
-					this.switchLever(state, worldIn, pos);
-				}
-				else {
-					this.switchLever(state, worldIn, pos);
-				}
-			}
 		}
 		this.updateNeighbours(state, worldIn, pos);
 		return ActionResultType.CONSUME;

@@ -7,21 +7,16 @@ import com.jdolphin.dmadditions.cap.PlayerRegenCapability;
 import com.jdolphin.dmadditions.client.ClientDMBusEvents;
 import com.jdolphin.dmadditions.client.init.DMATileRenderRegistry;
 import com.jdolphin.dmadditions.commands.*;
-import com.jdolphin.dmadditions.compat.tconstruct.FluidTags;
-import com.jdolphin.dmadditions.compat.tconstruct.TinkersRenderType;
 import com.jdolphin.dmadditions.config.DMAClientConfig;
 import com.jdolphin.dmadditions.config.DMACommonConfig;
 import com.jdolphin.dmadditions.entity.*;
 import com.jdolphin.dmadditions.entity.cyber.MondasCybermanEntity;
-import com.jdolphin.dmadditions.entity.cyber.MondasianEntity;
 import com.jdolphin.dmadditions.entity.cyber.WoodenCybermanEntity;
-import com.jdolphin.dmadditions.entity.timelord.TimeLordEntity;
 import com.jdolphin.dmadditions.event.DMAEventHandlerGeneral;
 import com.jdolphin.dmadditions.event.RegenEvents;
 import com.jdolphin.dmadditions.init.*;
 import com.jdolphin.dmadditions.jokes.JokeReloadListener;
 import com.jdolphin.dmadditions.sonic.SonicMagpieTelevision;
-import com.jdolphin.dmadditions.util.Helper;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.serialization.Codec;
 import com.swdteam.common.block.IRust;
@@ -55,7 +50,6 @@ import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -99,16 +93,6 @@ public class DmAdditions {
 	public static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 	public static final Random RANDOM = new Random();
 
-	public static boolean hasNTM() {
-		return ModList.get().isLoaded("tardis");
-	}
-	public static boolean hasTC() {
-		return ModList.get().isLoaded("tconstruct");
-	}
-	public static boolean hasIMMP() {
-		return ModList.get().isLoaded("immersive_portals");
-	}
-
 	public static List<Data> exteriors = new ArrayList<>();
 
 
@@ -140,14 +124,9 @@ public class DmAdditions {
 		IEventBus vengaBus = MinecraftForge.EVENT_BUS;
 		vengaBus.addListener(EventPriority.HIGH, this::biomeModification);
 		vengaBus.addListener(EventPriority.NORMAL, this::addDimensionalSpacing);
-		if (hasTC()) {
-			DMAFluids.FLUIDS.register(bus);
-		}
 	}
 
-	@SubscribeEvent
-	public void onRegisterCommandEvent(RegisterCommandsEvent event) {
-		CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
+	public void registerCommands(CommandDispatcher<CommandSource> dispatcher) {
 		GameModeCommand.register(dispatcher);
 		TeleportCommand.register(dispatcher);
 		CommandSit.register(dispatcher);
@@ -155,11 +134,15 @@ public class DmAdditions {
 		GodCommand.register(dispatcher);
 	}
 
+	@SubscribeEvent
+	public void onRegisterCommandEvent(RegisterCommandsEvent event) {
+		this.registerCommands(event.getDispatcher());
+	}
+
 	public void entityAttributeEvent(EntityAttributeCreationEvent event) {
 		event.put(DMAEntities.JAMESLEDOLPHIN.get(), JamesLeDolphinEntity.createAttributes().build());
 		event.put(DMAEntities.WOODEN_CYBERMAN.get(), WoodenCybermanEntity.setCustomAttributes().build());
 		event.put(DMAEntities.MONDAS_CYBERMAN.get(), MondasCybermanEntity.createAttributes().build());
-		event.put(DMAEntities.MONDASIAN.get(), MondasianEntity.createAttributes().build());
 		event.put(DMAEntities.BESSIE.get(), BessieEntity.setCustomAttributes().build());
 		event.put(DMAEntities.TW_SUV.get(), TorchwoodSuvEntity.setCustomAttributes().build());
 		event.put(DMAEntities.SNOWMAN.get(), SnowmanEntity.setCustomAttributes().build());
@@ -185,12 +168,6 @@ public class DmAdditions {
 			DMAConfiguredStructures.registerConfiguredStructures();
 		});
 		CapabilityManager.INSTANCE.register(IPlayerRegenCap.class, new IPlayerRegenCap.Storage(), () -> new PlayerRegenCapability(null));
-		if (hasNTM()) Helper.info("Enabling New Tardis Mod compatibility features");
-		if (hasTC()) Helper.info("Enabling Tinker's Construct compatibility features");
-		if (hasIMMP()) Helper.info("Enabling Immersive Portals compatibility features");
-		if (hasIMMP() && hasNTM())
-			Helper.warn("New Tardis Mod and Immersive Portals may not work well together! You've been warned!");
-
 //		List<ModFileInfo> files = LoadingModList.get().getModFiles();
 //		for (ModFileInfo fileInfo : files) {
 //
@@ -275,23 +252,10 @@ public class DmAdditions {
 		DMABlocks.registerRenderTypes();
 		MinecraftForge.EVENT_BUS.register(ClientDMBusEvents.class);
 		DMATileRenderRegistry.init();
-		if (hasTC()) {
-			TinkersRenderType.setTranslucent(DMAFluids.molten_dalekanium);
-			TinkersRenderType.setTranslucent(DMAFluids.molten_steel);
-			TinkersRenderType.setTranslucent(DMAFluids.molten_stainless_steel);
-			TinkersRenderType.setTranslucent(DMAFluids.molten_metalert);
-			TinkersRenderType.setTranslucent(DMAFluids.molten_silicon);
-		}
 	}
 
 	@SubscribeEvent
-	static void gatherData(final GatherDataEvent event) {
-		DataGenerator datagenerator = event.getGenerator();
-		ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-		if (hasTC() && event.includeServer()) {
-			datagenerator.addProvider(new FluidTags(datagenerator, existingFileHelper));
-		}
-	}
+	static void gatherData(final GatherDataEvent event) {}
 
 	public void biomeModification(BiomeLoadingEvent event) {
 		if (DMASpawnerRegistry.spawns.containsKey(event.getName())) {

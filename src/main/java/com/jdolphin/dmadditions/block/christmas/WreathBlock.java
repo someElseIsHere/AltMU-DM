@@ -33,6 +33,7 @@ public class WreathBlock extends HorizontalFaceBlock {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public VoxelShape getShape(BlockState state, IBlockReader blockReader, BlockPos pos, ISelectionContext selectionContext) {
 		switch (state.getValue(FACE)) {
 			case FLOOR:
@@ -56,6 +57,7 @@ public class WreathBlock extends HorizontalFaceBlock {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return getShape(state, worldIn, pos, context);
 	}

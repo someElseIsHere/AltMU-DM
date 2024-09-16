@@ -156,71 +156,9 @@ public class BetterDimensionSelector extends DimensionSelectorPanelBlock impleme
 				}
 			}
 
-			if (DmAdditions.hasNTM()) {
-				if (net.tardis.mod.helper.WorldHelper.areDimensionTypesSame(worldIn, net.tardis.mod.world.dimensions.TDimensions.DimensionTypes.TARDIS_TYPE)) {
-					net.tardis.mod.helper.TardisHelper.getConsole(worldIn.getServer(), worldIn).ifPresent(tile -> {
-						switch (buttonClicked) {
-							case BTN_LEFT:
-								if (tile.getFlightEvent() == null) {
-									this.createDimListIfEmpty();
-									if (!this.dimList.isEmpty()) {
-										this.modIndex(-1);
-										ServerWorld type = (ServerWorld) this.dimList.get(this.index);
-										tile.setDestination(type.dimension(), tile.getDestinationPosition());
-										player.displayClientMessage((new TranslationTextComponent("message.tardis.control.dimchange"))
-												.append((new StringTextComponent(net.tardis.mod.helper.WorldHelper.formatDimName(type.dimension())))
-													.withStyle(TextFormatting.LIGHT_PURPLE)), true);
-										if (tile != null) {
-											tile.setDestination(this.dimList.get(this.index).dimension(), tile.getDestinationPosition());
-										}
-									} else {
-										this.index = 0;
-									}
-								} else if (tile.getFlightEvent() instanceof net.tardis.mod.flight.DimensionFlightEvent) {
-									tile.getFlightEvent().onComplete(tile);
-								}
-								break;
-							case BTN_RIGHT:
-								if (tile.getFlightEvent() == null) {
-									this.createDimListIfEmpty();
-									if (!tile.getLevel().isClientSide() && tile.getLandTime() <= 0) {
-										if (!this.dimList.isEmpty()) {
-											this.modIndex(1);
-											ServerWorld type = (ServerWorld) this.dimList.get(this.index);
-											tile.setDestination(type.dimension(), tile.getDestinationPosition());
-											player.displayClientMessage((new TranslationTextComponent("message.tardis.control.dimchange"))
-													.append((new StringTextComponent(net.tardis.mod.helper.WorldHelper.formatDimName(type.dimension())))
-														.withStyle(TextFormatting.LIGHT_PURPLE)), true);
-											if (tile != null) {
-												tile.setDestination(this.dimList.get(this.index).dimension(), tile.getDestinationPosition());											}
-										} else {
-											this.index = 0;
-										}
-									} else if (tile.getFlightEvent() instanceof net.tardis.mod.flight.DimensionFlightEvent) {
-										tile.getFlightEvent().onComplete(tile);
-									}
-								}
-								break;
-							default:
-								break;
-						}
-					});
-				}
-			}
-
 		}
 
 		return ActionResultType.CONSUME;
-	}
-	private void createDimListIfEmpty(){
-		if (DmAdditions.hasNTM()) {
-			if (this.dimList.isEmpty()) {
-				ServerLifecycleHooks.getCurrentServer().getAllLevels().forEach(world -> {
-					if (net.tardis.mod.helper.WorldHelper.canTravelToDimension(world))
-						dimList.add(world);
-				});
-			}
-		}
 	}
 
 	private void modIndex(int i) {

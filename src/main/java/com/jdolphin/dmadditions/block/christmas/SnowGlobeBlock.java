@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import org.jetbrains.annotations.NotNull;
 
 public class SnowGlobeBlock extends HorizontalBlock {
 	protected static final VoxelShape ONE_AABB = Block.box(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D);
@@ -18,18 +19,22 @@ public class SnowGlobeBlock extends HorizontalBlock {
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateContainer.@NotNull Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(FACING);
 	}
 
+	@NotNull
 	@Override
-	public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
+	@SuppressWarnings("deprecation")
+	public VoxelShape getShape(@NotNull BlockState blockState, @NotNull IBlockReader iBlockReader, @NotNull BlockPos blockPos, @NotNull ISelectionContext iSelectionContext) {
 		return ONE_AABB;
 	}
 
+	@NotNull
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
+	@SuppressWarnings("deprecation")
+	public VoxelShape getCollisionShape(@NotNull BlockState blockState, @NotNull IBlockReader iBlockReader, @NotNull BlockPos blockPos, @NotNull ISelectionContext iSelectionContext) {
 		return getShape(blockState, iBlockReader, blockPos, iSelectionContext);
 	}
 

@@ -103,32 +103,6 @@ public class RenderCoordPanel extends TileEntityRenderer<CoordPanelTileEntity> {
 			}
 		}
 
-		if (DmAdditions.hasNTM() && net.tardis.mod.helper.WorldHelper.areDimensionTypesSame(te.getLevel(), net.tardis.mod.world.dimensions.TDimensions.DimensionTypes.TARDIS_TYPE)) {
-			if (net.tardis.mod.helper.TardisHelper.getConsoleInWorld(te.getLevel()).isPresent()) {
-				net.tardis.mod.helper.TardisHelper.getConsoleInWorld(te.getLevel()).ifPresent(tile -> {
-					BlockPos dest = tile.getDestinationPosition();
-					if (dest != null) {
-						if (tile.hasNavCom()) {
-							String x = "X: " + dest.getX();
-							String y = "Y: " + dest.getY();
-							String z = "Z: " + dest.getZ();
-
-							font.draw(matrixStack, x, (float) (-font.width(x) / 2), -4.0F, -1);
-							font.draw(matrixStack, y, (float) (-font.width(y) / 2), 34.0F, -1);
-							font.draw(matrixStack, z, (float) (-font.width(z) / 2), 72.0F, -1);
-						} else {
-							String x = "X: UNKNOWN";
-							String y = "Y: UNKNOWN";
-							String z = "Z: UNKNOWN";
-
-							font.draw(matrixStack, x, (float) (-font.width(x) / 2), -4.0F, -1);
-							font.draw(matrixStack, y, (float) (-font.width(y) / 2), 34.0F, -1);
-							font.draw(matrixStack, z, (float) (-font.width(z) / 2), 72.0F, -1);
-						}
-					}
-				});
-			}
-		}
 		matrixStack.popPose();
 	}
 }

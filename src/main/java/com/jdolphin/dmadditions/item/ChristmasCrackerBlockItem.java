@@ -14,6 +14,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +32,7 @@ public class ChristmasCrackerBlockItem extends BlockItem {
 
 	@Override
 	public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-		if(!world.isClientSide) ChristmasCrackerBlock.openCracker(world, player.getEyePosition(1).add(player.getLookAngle()));
+		if(!world.isClientSide) ChristmasCrackerBlock.openCracker((ServerWorld) world, player.getEyePosition(1).add(player.getLookAngle()));
 		ItemStack item = player.getItemInHand(hand);
 		item.shrink(1);
 		return ActionResult.consume(item);

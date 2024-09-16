@@ -16,6 +16,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 public class ChristmasPuddingBlock extends Block {
 	public static final IntegerProperty BITES = IntegerProperty.create("bites", 0, 1);
@@ -23,7 +24,7 @@ public class ChristmasPuddingBlock extends Block {
 
 	public ChristmasPuddingBlock(Properties properties) {
 		super(properties);
-		this.registerDefaultState(this.stateDefinition.any().setValue(BITES, Integer.valueOf(0)));
+		this.registerDefaultState(this.stateDefinition.any().setValue(BITES, 0));
 	}
 
 	@Override
@@ -31,12 +32,17 @@ public class ChristmasPuddingBlock extends Block {
 		blockBlockStateBuilder.add(BITES);
 	}
 
+	@NotNull
 	@Override
-	public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
+	@SuppressWarnings("deprecation")
+	public VoxelShape getShape(BlockState blockState, @NotNull IBlockReader iBlockReader, @NotNull BlockPos blockPos, @NotNull ISelectionContext iSelectionContext) {
 		return SHAPE_BY_BITE[blockState.getValue(BITES)];
 	}
 
-	public ActionResultType use(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
+	@NotNull
+	@Override
+	@SuppressWarnings("deprecation")
+	public ActionResultType use(@NotNull BlockState blockState, World world, @NotNull BlockPos blockPos, @NotNull PlayerEntity playerEntity, @NotNull Hand hand, @NotNull BlockRayTraceResult blockRayTraceResult) {
 		if (world.isClientSide) {
 			ItemStack itemstack = playerEntity.getItemInHand(hand);
 			if (this.eat(world, blockPos, blockState, playerEntity).consumesAction()) {
@@ -59,7 +65,7 @@ public class ChristmasPuddingBlock extends Block {
 			playerEntity.getFoodData().eat(2, 0.1F);
 			int i = blockState.getValue(BITES);
 			if (i < 1) {
-				iWorld.setBlock(blockPos, blockState.setValue(BITES, Integer.valueOf(i + 1)), 3);
+				iWorld.setBlock(blockPos, blockState.setValue(BITES, i + 1), 3);
 			} else {
 				iWorld.removeBlock(blockPos, false);
 			}

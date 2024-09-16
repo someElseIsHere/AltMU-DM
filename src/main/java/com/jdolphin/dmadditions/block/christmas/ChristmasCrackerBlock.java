@@ -22,6 +22,8 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +35,10 @@ public class ChristmasCrackerBlock extends HorizontalBlock {
 		super(properties);
 	}
 
+	@NotNull
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos,
-			ISelectionContext context) {
+	@SuppressWarnings("deprecation")
+	public VoxelShape getShape(BlockState state, @NotNull IBlockReader reader, @NotNull BlockPos pos, @NotNull ISelectionContext context) {
 		switch (state.getValue(HorizontalBlock.FACING)) {
 			case NORTH:
 			case SOUTH:
@@ -54,20 +57,23 @@ public class ChristmasCrackerBlock extends HorizontalBlock {
 	}
 
 	@Override
-	public boolean canSurvive(BlockState blockstate, IWorldReader worldReader, BlockPos pos) {
+	@SuppressWarnings("deprecation")
+	public boolean canSurvive(@NotNull BlockState blockstate, IWorldReader worldReader, BlockPos pos) {
 		return worldReader.getBlockState(pos.below()).isFaceSturdy(worldReader, pos, Direction.UP);
 	}
 
 	@Override
-	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(@NotNull Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(HorizontalBlock.FACING);
 	}
 
+	@NotNull
 	@Override
-	public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+	@SuppressWarnings("deprecation")
+	public ActionResultType use(@NotNull BlockState state, @NotNull World world, @NotNull BlockPos pos, @NotNull PlayerEntity player, @NotNull Hand hand, @NotNull BlockRayTraceResult result) {
 		if(hand == Hand.MAIN_HAND && player.getItemInHand(hand).isEmpty() && !world.isClientSide()){
-			openCracker(world, new Vector3d(pos.getX()+.5,pos.getY(),pos.getZ()+.5));
+			openCracker((ServerWorld) world, new Vector3d(pos.getX()+.5,pos.getY(),pos.getZ()+.5));
 			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 			return ActionResultType.SUCCESS;
 		}
@@ -75,20 +81,21 @@ public class ChristmasCrackerBlock extends HorizontalBlock {
 	}
 
 	// Spawns contents at the location x,y,z with particle and sound
-	public static void openCracker(World world, Vector3d position){
+	public static void openCracker(ServerWorld world, Vector3d position){
 		if(world.isClientSide) return;
 		for (ItemStack item : generateContents(world)) {
 			ItemEntity surprise = new ItemEntity(world, position.x, position.y, position.z, item);
 			world.addFreshEntity(surprise);
 		}
-		world.getServer().getLevel(world.dimension()).sendParticles(ParticleTypes.FIREWORK, position.x,position.y,position.z,30,0.1,0.1,0.1,0.1);
+
+		world.sendParticles(ParticleTypes.FIREWORK, position.x,position.y,position.z,30,0.1,0.1,0.1,0.1);
 		BlockPos soundPoint = new BlockPos(Math.floor(position.x),Math.floor(position.y),Math.floor(position.z));
 		world.playSound(null, soundPoint, SoundEvents.FIREWORK_ROCKET_BLAST, SoundCategory.NEUTRAL, 2,1);
 	}
 
 	// Generates the items a cracker will drop when it is opened
 	public static List<ItemStack> generateContents(World world){
-		List<ItemStack> contents = new ArrayList<ItemStack>();
+		List<ItemStack> contents = new ArrayList<>();
 
 		// christmas_hat
 		ItemStack hat = DMAItems.CHRISTMAS_HAT.get().getDefaultInstance();
